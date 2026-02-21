@@ -38,7 +38,28 @@
   --color-white: var(--white);
   --color-danger: var(--danger);
 }
+@layer components {
+  .main-container {
+    @apply mt-3.5 mx-[clamp(15px,2.5vw,16px)];
+  }
 
+  .text-gradient-primary {
+    @apply bg-gradient-primary bg-clip-text text-transparent;
+  }
+  .text-gradient-secondary {
+    @apply bg-gradient-secondary bg-clip-text text-transparent;
+  }
+  img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+  }
+}
+.scrollbar-x-remove::-webkit-scrollbar:horizontal {
+  @apply hidden;
+}
+.scrollbar-y-remove::-webkit-scrollbar:vertical {
+  @apply hidden;
+}
 body {
   background: var(--background);
   color: var(--foreground);
