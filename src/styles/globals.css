@@ -23,8 +23,20 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-positive: var(--positive);
+  --color-positive-light: var(--positive-light);
+  --color-positive-lightest: var(--positive-lightest);
+  --color-black: var(--black);
+  --color-black-10: var(--black-10);
+  --color-black-15: var(--black-15);
+  --color-black-30: var(--black-30);
+  --color-black-50: var(--black-50);
+  --color-black-70: var(--black-70);
+  --color-black-80: var(--black-80);
+  --color-white: var(--white);
+  --color-danger: var(--danger);
 }
 
 body {
