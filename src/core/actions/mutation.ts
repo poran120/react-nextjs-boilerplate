@@ -3,9 +3,9 @@
 import { cookies } from "next/headers";
 import { revalidatePath, revalidateTag } from "next/cache";
 
-import { resolveModelName } from "@/utils/modelResolver";
-import { hasPermission, parseAccessRules } from "@/utils/accessControl";
-import { buildDomainIdentifier } from "@/utils/buildDomainIdentifier";
+// import { resolveModelName } from "@/utils/modelResolver";
+// import { hasPermission, parseAccessRules } from "@/utils/accessControl";
+// import { buildDomainIdentifier } from "@/utils/buildDomainIdentifier";
 
 import { logger } from "@/src/utils/logger";
 import {
@@ -66,32 +66,32 @@ export const mutation = async ({
     }
 
     // #> 3. ACCESS CONTROL (role-based)
-    if (requireAuth && requireAccessControl && accessToken) {
-      const rulesRaw = cookieStore.get("accessRules")?.value;
-      const rules = parseAccessRules(rulesRaw);
+    // if (requireAuth && requireAccessControl && accessToken) {
+    //   const rulesRaw = cookieStore.get("accessRules")?.value;
+    //   const rules = parseAccessRules(rulesRaw);
 
-      // #> Added modelName props for easier way to extract it.
-      const rawModel = modelName ? modelName : route?.split("/")[1];
-      const model = resolveModelName(rawModel);
+    //   // #> Added modelName props for easier way to extract it.
+    //   const rawModel = modelName ? modelName : route?.split("/")[1];
+    //   const model = resolveModelName(rawModel);
 
-      const methodToAction: Record<
-        string,
-        "read" | "write" | "update" | "delete"
-      > = {
-        GET: "read",
-        POST: "write",
-        PUT: "update",
-        PATCH: "update",
-        DELETE: "delete",
-      };
+    //   const methodToAction: Record<
+    //     string,
+    //     "read" | "write" | "update" | "delete"
+    //   > = {
+    //     GET: "read",
+    //     POST: "write",
+    //     PUT: "update",
+    //     PATCH: "update",
+    //     DELETE: "delete",
+    //   };
 
-      const action = methodToAction[method];
-      if (!hasPermission(rules, model, action)) {
-        const msg = "Permission is denied for this role!";
-        logger(msg);
-        return { success: false, message: msg };
-      }
-    }
+    //   const action = methodToAction[method];
+    //   if (!hasPermission(rules, model, action)) {
+    //     const msg = "Permission is denied for this role!";
+    //     logger(msg);
+    //     return { success: false, message: msg };
+    //   }
+    // }
 
     const headers: HeadersInit = {
       "Content-Type": "application/json",
@@ -100,10 +100,10 @@ export const mutation = async ({
     if (requireAuth && accessToken) {
       headers["Authorization"] = `Bearer ${accessToken}`;
     }
-    if (requireShopId && subdomain) {
-      const identifier = buildDomainIdentifier(subdomain, API_BASE_URL);
-      headers["x-app-identifier"] = identifier;
-    }
+    // if (requireShopId && subdomain) {
+    //   const identifier = buildDomainIdentifier(subdomain, API_BASE_URL);
+    //   headers["x-app-identifier"] = identifier;
+    // }
     let url = `${API_V1_BASE_URL}${route}`;
     if (method === "DELETE" && id) {
       url += `/${id}`;
@@ -137,7 +137,9 @@ export const mutation = async ({
     const tags = Array.isArray(tagsToRevalidate)
       ? tagsToRevalidate
       : [tagsToRevalidate];
-    tags.forEach((tag) => typeof tag === "string" && revalidateTag(tag));
+    tags.forEach(
+      (tag) => typeof tag === "string" && revalidateTag(tag, { expire: 0 }),
+    );
 
     return result;
   } catch (error) {
