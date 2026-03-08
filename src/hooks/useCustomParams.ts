@@ -1,5 +1,207 @@
+// import { usePathname, useRouter, useSearchParams } from "next/navigation";
+// import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+// type UseCustomParamsProps = {
+//   routeName?: string;
+// };
+
+// type SetQueryParamOptions = {
+//   debounce?: boolean;
+//   routeName?: string;
+// };
+
+// type RemoveQueryParamOptions = {
+//   routeName?: string;
+// };
+
+// type ClearAllQueryParamOptions = {
+//   routeName?: string;
+// };
+
+// export const useCustomParams = ({
+//   routeName: initialRouteName,
+// }: UseCustomParamsProps = {}) => {
+//   const router = useRouter();
+//   const searchParams = useSearchParams();
+//   const currentPath = usePathname();
+//   const [loading, setLoading] = useState(false);
+//   const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+//   /* -------------------------------- helpers -------------------------------- */
+
+//   const sanitizeRouteName = (name?: string) =>
+//     name?.replace(/^\/+/, "") || currentPath.replace(/^\/+/, "");
+
+//   const hasQuery = useMemo(
+//     () => searchParams.toString().length > 0,
+//     [searchParams],
+//   );
+
+//   /* ------------------------------ url builder ------------------------------- */
+
+//   const buildUpdatedURL = (
+//     updates: Record<string, string>,
+//     routeName?: string,
+//   ) => {
+//     const params = new URLSearchParams(searchParams.toString());
+
+//     Object.entries(updates).forEach(([key, value]) => {
+//       params.set(encodeURIComponent(key), encodeURIComponent(value));
+//     });
+
+//     return `/${sanitizeRouteName(routeName)}?${params.toString()}`;
+//   };
+
+//   /* ------------------------------ set query --------------------------------- */
+
+//   const setQueryParam = useCallback(
+//     (updates: Record<string, string>, options: SetQueryParamOptions = {}) => {
+//       const { debounce = false, routeName } = options;
+//       const newURL = buildUpdatedURL(updates, routeName || initialRouteName);
+
+//       const updateURL = () => {
+//         const currentURL = `/${sanitizeRouteName(
+//           routeName || initialRouteName,
+//         )}?${searchParams.toString()}`;
+
+//         if (currentURL === newURL) return;
+//         setLoading(true);
+//         router.replace(newURL, { scroll: false });
+//       };
+
+//       if (debounce) {
+//         if (debounceTimer.current) clearTimeout(debounceTimer.current);
+//         debounceTimer.current = setTimeout(() => {
+//           updateURL();
+//         }, 400);
+//       } else {
+//         setLoading(true);
+//         updateURL();
+//       }
+//     },
+//     [initialRouteName, router, searchParams],
+//   );
+
+//   /* ----------------------------- remove query ------------------------------- */
+
+//   const removeQueryParam = (
+//     key: string | string[],
+//     valueToRemove?: string,
+//     options: RemoveQueryParamOptions = {},
+//   ) => {
+//     if (!hasQuery) return;
+
+//     const { routeName } = options;
+//     const params = new URLSearchParams(searchParams.toString());
+
+//     if (Array.isArray(key)) {
+//       key.forEach((k) => params.delete(k));
+//     } else if (valueToRemove) {
+//       const values = params.get(key)?.split(",") || [];
+//       const filtered = values.filter((v) => v !== valueToRemove);
+//       filtered.length
+//         ? params.set(key, filtered.join(","))
+//         : params.delete(key);
+//     } else {
+//       params.delete(key);
+//     }
+
+//     setLoading(true);
+
+//     const route = `/${sanitizeRouteName(routeName || initialRouteName)}`;
+//     const query = params.toString();
+//     router.replace(query ? `${route}?${query}` : route, { scroll: false });
+//   };
+
+//   /* ----------------------------- clear all ---------------------------------- */
+
+//   const clearAllQueryParam = (options: ClearAllQueryParamOptions = {}) => {
+//     if (!hasQuery) return;
+
+//     const { routeName } = options;
+//     setLoading(true);
+
+//     router.replace(`/${sanitizeRouteName(routeName || initialRouteName)}`, {
+//       scroll: false,
+//     });
+//   };
+
+//   /* ------------------------- stop loading on change ------------------------- */
+
+//   useEffect(() => {
+//     setLoading(false);
+//   }, [searchParams]);
+
+//   /* -------------------------------- readers -------------------------------- */
+
+//   const getQueryParam = useCallback(
+//     (key: string) => {
+//       const value = searchParams.get(key);
+//       return value ? decodeURIComponent(value) : null;
+//     },
+//     [searchParams],
+//   );
+
+//   const getArrayQueryParam = useCallback(
+//     (key: string) => {
+//       const value = getQueryParam(key);
+//       return value ? value.split(",").map((v) => v.trim()) : [];
+//     },
+//     [getQueryParam],
+//   );
+
+//   const getNumberParam = useCallback(
+//     (key: string, fallback = 0) => {
+//       const value = getQueryParam(key);
+//       const num = value ? Number(value) : NaN;
+//       return isNaN(num) ? fallback : num;
+//     },
+//     [getQueryParam],
+//   );
+
+//   const getBooleanParam = useCallback(
+//     (key: string, fallback = false) => {
+//       const value = getQueryParam(key);
+//       return value ? value === "true" || value === "1" : fallback;
+//     },
+//     [getQueryParam],
+//   );
+
+//   const allParams = useMemo(() => {
+//     const obj: Record<string, string> = {};
+//     for (const [k, v] of searchParams.entries()) {
+//       obj[decodeURIComponent(k)] = decodeURIComponent(v);
+//     }
+//     return obj;
+//   }, [searchParams]);
+
+//   const hasAnyQuery = hasQuery;
+
+//   return {
+//     // write
+//     setQueryParam,
+//     removeQueryParam,
+//     clearAllQueryParam,
+
+//     // read
+//     getQueryParam,
+//     getArrayQueryParam,
+//     getNumberParam,
+//     getBooleanParam,
+//     allParams,
+//     hasAnyQuery,
+
+//     // state
+//     loading,
+//   };
+// };
+
+"use client";
+
+import { useCallback, useMemo, useRef, useTransition } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+
+type QueryUpdates = Record<string, string>;
 
 type UseCustomParamsProps = {
   routeName?: string;
@@ -22,176 +224,182 @@ export const useCustomParams = ({
   routeName: initialRouteName,
 }: UseCustomParamsProps = {}) => {
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
-  const currentPath = usePathname();
-  const [loading, setLoading] = useState(false);
-  const debounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+  const [isPending, startTransition] = useTransition();
+
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* -------------------------------- helpers -------------------------------- */
 
-  const sanitizeRouteName = (name?: string) =>
-    name?.replace(/^\/+/, "") || currentPath.replace(/^\/+/, "");
-
-  const hasQuery = useMemo(
-    () => searchParams.toString().length > 0,
-    [searchParams],
+  const sanitizeRouteName = useCallback(
+    (name?: string) =>
+      name?.replace(/^\/+/, "") || pathname.replace(/^\/+/, ""),
+    [pathname],
   );
+
+  const hasQuery = useMemo(() => searchParams.size > 0, [searchParams]);
 
   /* ------------------------------ url builder ------------------------------- */
 
-  const buildUpdatedURL = (
-    updates: Record<string, string>,
-    routeName?: string,
-  ) => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    Object.entries(updates).forEach(([key, value]) => {
-      params.set(encodeURIComponent(key), encodeURIComponent(value));
-    });
-
-    return `/${sanitizeRouteName(routeName)}?${params.toString()}`;
-  };
+  const buildURL = useCallback(
+    (params: URLSearchParams, routeName?: string) => {
+      const route = sanitizeRouteName(routeName || initialRouteName);
+      const query = params.toString();
+      return query ? `/${route}?${query}` : `/${route}`;
+    },
+    [initialRouteName, sanitizeRouteName],
+  );
 
   /* ------------------------------ set query --------------------------------- */
 
   const setQueryParam = useCallback(
-    (updates: Record<string, string>, options: SetQueryParamOptions = {}) => {
+    (updates: QueryUpdates, options: SetQueryParamOptions = {}) => {
       const { debounce = false, routeName } = options;
-      const newURL = buildUpdatedURL(updates, routeName || initialRouteName);
 
-      const updateURL = () => {
-        const currentURL = `/${sanitizeRouteName(
-          routeName || initialRouteName,
-        )}?${searchParams.toString()}`;
+      const params = new URLSearchParams(searchParams.toString());
+
+      Object.entries(updates).forEach(([key, value]) => {
+        params.set(key, value);
+      });
+
+      const newURL = buildURL(params, routeName);
+
+      const update = () => {
+        const currentURL = buildURL(
+          new URLSearchParams(searchParams.toString()),
+          routeName,
+        );
 
         if (currentURL === newURL) return;
-        setLoading(true);
-        router.replace(newURL, { scroll: false });
+
+        startTransition(() => {
+          router.replace(newURL, { scroll: false });
+        });
       };
 
       if (debounce) {
         if (debounceTimer.current) clearTimeout(debounceTimer.current);
-        debounceTimer.current = setTimeout(() => {
-          updateURL();
-        }, 400);
+
+        debounceTimer.current = setTimeout(update, 400);
       } else {
-        setLoading(true);
-        updateURL();
+        update();
       }
     },
-    [initialRouteName, router, searchParams],
+    [buildURL, router, searchParams, startTransition],
   );
 
   /* ----------------------------- remove query ------------------------------- */
 
-  const removeQueryParam = (
-    key: string | string[],
-    valueToRemove?: string,
-    options: RemoveQueryParamOptions = {},
-  ) => {
-    if (!hasQuery) return;
+  const removeQueryParam = useCallback(
+    (
+      key: string | string[],
+      valueToRemove?: string,
+      options: RemoveQueryParamOptions = {},
+    ) => {
+      if (!hasQuery) return;
 
-    const { routeName } = options;
-    const params = new URLSearchParams(searchParams.toString());
+      const { routeName } = options;
 
-    if (Array.isArray(key)) {
-      key.forEach((k) => params.delete(k));
-    } else if (valueToRemove) {
-      const values = params.get(key)?.split(",") || [];
-      const filtered = values.filter((v) => v !== valueToRemove);
-      filtered.length
-        ? params.set(key, filtered.join(","))
-        : params.delete(key);
-    } else {
-      params.delete(key);
-    }
+      const params = new URLSearchParams(searchParams.toString());
 
-    setLoading(true);
+      if (Array.isArray(key)) {
+        key.forEach((k) => params.delete(k));
+      } else if (valueToRemove) {
+        const values = params.get(key)?.split(",") || [];
+        const filtered = values.filter((v) => v !== valueToRemove);
 
-    const route = `/${sanitizeRouteName(routeName || initialRouteName)}`;
-    const query = params.toString();
-    router.replace(query ? `${route}?${query}` : route, { scroll: false });
-  };
+        if (filtered.length) {
+          params.set(key, filtered.join(","));
+        } else {
+          params.delete(key);
+        }
+      } else {
+        params.delete(key);
+      }
+
+      startTransition(() => {
+        router.replace(buildURL(params, routeName), { scroll: false });
+      });
+    },
+    [buildURL, hasQuery, router, searchParams, startTransition],
+  );
 
   /* ----------------------------- clear all ---------------------------------- */
 
-  const clearAllQueryParam = (options: ClearAllQueryParamOptions = {}) => {
-    if (!hasQuery) return;
+  const clearAllQueryParam = useCallback(
+    (options: ClearAllQueryParamOptions = {}) => {
+      if (!hasQuery) return;
 
-    const { routeName } = options;
-    setLoading(true);
+      const { routeName } = options;
 
-    router.replace(`/${sanitizeRouteName(routeName || initialRouteName)}`, {
-      scroll: false,
-    });
-  };
-
-  /* ------------------------- stop loading on change ------------------------- */
-
-  useEffect(() => {
-    setLoading(false);
-  }, [searchParams]);
+      startTransition(() => {
+        router.replace(`/${sanitizeRouteName(routeName || initialRouteName)}`, {
+          scroll: false,
+        });
+      });
+    },
+    [hasQuery, initialRouteName, router, sanitizeRouteName, startTransition],
+  );
 
   /* -------------------------------- readers -------------------------------- */
 
   const getQueryParam = useCallback(
-    (key: string) => {
-      const value = searchParams.get(key);
-      return value ? decodeURIComponent(value) : null;
-    },
+    (key: string) => searchParams.get(key),
     [searchParams],
   );
 
   const getArrayQueryParam = useCallback(
     (key: string) => {
-      const value = getQueryParam(key);
+      const value = searchParams.get(key);
       return value ? value.split(",").map((v) => v.trim()) : [];
     },
-    [getQueryParam],
+    [searchParams],
   );
 
   const getNumberParam = useCallback(
     (key: string, fallback = 0) => {
-      const value = getQueryParam(key);
-      const num = value ? Number(value) : NaN;
+      const value = searchParams.get(key);
+      const num = Number(value);
       return isNaN(num) ? fallback : num;
     },
-    [getQueryParam],
+    [searchParams],
   );
 
   const getBooleanParam = useCallback(
     (key: string, fallback = false) => {
-      const value = getQueryParam(key);
-      return value ? value === "true" || value === "1" : fallback;
+      const value = searchParams.get(key);
+      if (!value) return fallback;
+
+      return value === "true" || value === "1";
     },
-    [getQueryParam],
+    [searchParams],
   );
 
   const allParams = useMemo(() => {
     const obj: Record<string, string> = {};
-    for (const [k, v] of searchParams.entries()) {
-      obj[decodeURIComponent(k)] = decodeURIComponent(v);
-    }
+    searchParams.forEach((value, key) => {
+      obj[key] = value;
+    });
     return obj;
   }, [searchParams]);
 
-  const hasAnyQuery = hasQuery;
-
   return {
-    // write
+    /* write */
     setQueryParam,
     removeQueryParam,
     clearAllQueryParam,
 
-    // read
+    /* read */
     getQueryParam,
     getArrayQueryParam,
     getNumberParam,
     getBooleanParam,
     allParams,
-    hasAnyQuery,
+    hasAnyQuery: hasQuery,
 
-    // state
-    loading,
+    /* state */
+    loading: isPending,
   };
 };
