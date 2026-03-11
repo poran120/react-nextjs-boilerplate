@@ -1,36 +1,153 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# React + Next.js Engineering Boilerplate
+
+A scalable, production-ready **Next.js boilerplate** designed with clean architecture, modern frontend patterns, and strong developer experience.
+
+This template provides a structured foundation for building maintainable React applications using **Next.js App Router, TypeScript, and Tailwind CSS**.
+
+---
+
+## Features
+
+- Next.js App Router
+- TypeScript support
+- Tailwind CSS styling
+- Clean scalable folder structure
+- Global error handling
+- Custom `not-found` page
+- Loading states
+- Modular architecture
+- Reusable components
+- Utility-first development
+- Production-ready configuration
+
+---
+
+## Project Structure
+
+```
+src
+├─ app
+│  ├─ styles
+│  │  └─ globals.css
+│  ├─ error.tsx
+│  ├─ layout.tsx
+│  ├─ loading.tsx
+│  ├─ not-found.tsx
+│  └─ page.tsx
+│
+├─ assets
+│
+├─ components
+│  Reusable UI components
+│
+├─ constants
+│  Static configuration values
+│
+├─ core
+│  Application core logic and services
+│
+├─ helpers
+│  Helper functions
+│
+├─ hooks
+│  Custom React hooks
+│
+├─ types
+│  Global TypeScript types
+│
+├─ utils
+│  Reusable utility functions
+```
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### 1️⃣ Clone the repository
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+git clone <your-repo-url>
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2️⃣ Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+or
 
-## Learn More
+```
+yarn install
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 3️⃣ Run the development server
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The application will start at:
 
-## Deploy on Vercel
+```
+http://localhost:3000
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Available Scripts
+
+| Script          | Description             |
+| --------------- | ----------------------- |
+| `npm run dev`   | Run development server  |
+| `npm run build` | Build production app    |
+| `npm run start` | Start production server |
+| `npm run lint`  | Run ESLint              |
+
+---
+
+## Error Handling
+
+This boilerplate includes:
+
+- `error.tsx` → route-level error handling
+- `global-error.tsx` → global application errors
+- `not-found.tsx` → custom 404 page
+- `loading.tsx` → route loading UI
+
+---
+
+## Styling
+
+This project uses **Tailwind CSS** with a scalable design token system defined in global CSS.
+
+Key features:
+
+- CSS variables
+- Design tokens
+- Semantic color system
+- Utility-first styling
+
+---
+
+## Development Philosophy
+
+This boilerplate focuses on:
+
+- Maintainable architecture
+- Scalable folder structure
+- Clear separation of concerns
+- Modern React patterns
+- Production-ready setup
+
+---
+
+## License
+
+MIT License
+
+---
+
+## Author
+
+Maintained by **JAKER HOSSAIN & SIFAYET**
