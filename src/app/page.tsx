@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const features = [
   {
     title: "Scalable Architecture",
@@ -40,12 +42,18 @@ const Home = () => {
           </p>
 
           <div className="flex justify-center gap-4 pt-4">
-            <button className="px-6 py-3 bg-white text-black font-semibold rounded-xl hover:scale-105 transition">
+            <Link
+              href="/docs"
+              className="px-6 py-3 bg-white text-black font-semibold rounded-xl hover:scale-105 transition"
+            >
               Get Started
-            </button>
-            <button className="px-6 py-3 border border-white/40 rounded-xl hover:bg-white/10 transition">
+            </Link>
+            <Link
+              href="/docs/architecture"
+              className="px-6 py-3 border border-white/40 rounded-xl hover:bg-white/10 transition"
+            >
               View Documentation
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -73,15 +81,12 @@ const Home = () => {
             <h3 className="text-2xl font-bold tracking-wide">JAKER HOSSAIN</h3>
 
             <p className="mt-3 text-gray-300 text-sm leading-relaxed">
-              Frontend Team Lead at{" "}
+              Frontend Engineer at{" "}
               <span className="font-semibold text-white underline">
                 Expert Squad
               </span>
             </p>
 
-            <p className="text-gray-200 text-sm mt-2">
-              Part-time MERN Stack Developer
-            </p>
             <p className="text-gray-300 text-sm">Username: @jackfd120</p>
 
             <div className="mt-6 text-xs uppercase tracking-widest text-white/50">
